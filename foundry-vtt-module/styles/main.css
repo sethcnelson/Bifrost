@@ -1,0 +1,554 @@
+/* 
+ * ArUco Tracker Module CSS
+ * Foundry VTT styling for ArUco marker tracking integration
+ * Place this in: Data/modules/aruco-tracker/aruco-tracker.css
+ */
+
+/* ===========================================
+   ArUco Tracker Status Dialog
+   =========================================== */
+
+.aruco-tracker-dialog {
+    min-width: 500px;
+    max-width: 700px;
+}
+
+.aruco-tracker-dialog .window-content {
+    padding: 15px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #f0f0f0;
+    font-family: "Signika", sans-serif;
+}
+
+.aruco-tracker-dialog h3 {
+    color: #4a9eff;
+    border-bottom: 2px solid #4a9eff;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.aruco-tracker-dialog h4 {
+    color: #ff6b6b;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 1em;
+    border-left: 3px solid #ff6b6b;
+    padding-left: 10px;
+}
+
+/* Connection Status Indicators */
+.aruco-status-connected {
+    color: #4caf50 !important;
+    font-weight: bold;
+}
+
+.aruco-status-disconnected {
+    color: #f44336 !important;
+    font-weight: bold;
+}
+
+.aruco-status-connecting {
+    color: #ff9800 !important;
+    font-weight: bold;
+    animation: aruco-pulse 2s infinite;
+}
+
+@keyframes aruco-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Diagnostic Information Styling */
+.aruco-tracker-dialog p {
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.aruco-tracker-dialog p strong {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.aruco-tracker-dialog ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.aruco-tracker-dialog li {
+    margin: 5px 0;
+    line-height: 1.3;
+}
+
+/* Marker Schema Styling */
+.aruco-marker-schema {
+    background: rgba(74, 158, 255, 0.1);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.aruco-marker-schema ul {
+    margin: 8px 0;
+}
+
+.aruco-marker-schema li strong {
+    color: #4a9eff;
+}
+
+/* Optimization Benefits Styling */
+.aruco-benefits {
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.aruco-benefits li {
+    color: #81c784;
+}
+
+/* Network Diagnostics */
+.aruco-diagnostics {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    font-family: "Roboto Mono", monospace;
+    font-size: 0.9em;
+}
+
+/* Tracked Markers List */
+.aruco-tracked-markers {
+    background: rgba(156, 39, 176, 0.1);
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.aruco-tracked-markers ul {
+    margin: 0;
+}
+
+.aruco-tracked-markers li {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.aruco-tracked-markers li:last-child {
+    border-bottom: none;
+}
+
+/* Marker Type Badges */
+.aruco-marker-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 8px;
+}
+
+.aruco-marker-type.player {
+    background: #4caf50;
+    color: white;
+}
+
+.aruco-marker-type.item {
+    background: #ff9800;
+    color: white;
+}
+
+.aruco-marker-type.custom {
+    background: #9c27b0;
+    color: white;
+}
+
+.aruco-marker-type.corner {
+    background: #607d8b;
+    color: white;
+}
+
+.aruco-marker-type.unknown {
+    background: #757575;
+    color: white;
+}
+
+/* Action Buttons */
+.aruco-action-buttons {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.aruco-action-buttons button {
+    background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 0 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.aruco-action-buttons button:hover {
+    background: linear-gradient(135deg, #357abd 0%, #2868a3 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.aruco-action-buttons button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.aruco-action-buttons button.test-connection {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.aruco-action-buttons button.test-connection:hover {
+    background: linear-gradient(135deg, #f57c00 0%, #ef6c00 100%);
+}
+
+/* Troubleshooting Section */
+.aruco-troubleshooting {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.aruco-troubleshooting ul {
+    margin: 8px 0;
+}
+
+.aruco-troubleshooting li {
+    color: #ffab91;
+}
+
+/* ===========================================
+   Scene Control Button Styling
+   =========================================== */
+
+/* ArUco Status Button in Scene Controls */
+.control-tool[data-tool="aruco-tracker-status"] {
+    position: relative;
+}
+
+.control-tool[data-tool="aruco-tracker-status"].connected {
+    color: #4caf50;
+}
+
+.control-tool[data-tool="aruco-tracker-status"].disconnected {
+    color: #f44336;
+    animation: aruco-warning-blink 3s infinite;
+}
+
+@keyframes aruco-warning-blink {
+    0%, 85%, 100% { opacity: 1; }
+    87.5%, 97.5% { opacity: 0.3; }
+}
+
+/* Connection Status Indicator */
+.control-tool[data-tool="aruco-tracker-status"]::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f44336;
+    border: 1px solid #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.control-tool[data-tool="aruco-tracker-status"].connected::after {
+    background: #4caf50;
+    animation: aruco-connected-pulse 2s infinite;
+}
+
+@keyframes aruco-connected-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+/* ===========================================
+   Notification Styling
+   =========================================== */
+
+/* ArUco-specific notifications */
+.notification.aruco-tracker {
+    border-left: 4px solid #4a9eff;
+    background: linear-gradient(90deg, rgba(74, 158, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.notification.aruco-tracker.info {
+    border-left-color: #4a9eff;
+}
+
+.notification.aruco-tracker.warn {
+    border-left-color: #ff9800;
+}
+
+.notification.aruco-tracker.error {
+    border-left-color: #f44336;
+}
+
+/* ===========================================
+   Token Highlighting for ArUco Tokens
+   =========================================== */
+
+/* Highlight tokens that are being tracked by ArUco */
+.token[data-aruco-tracked="true"] {
+    position: relative;
+}
+
+.token[data-aruco-tracked="true"]::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid #4a9eff;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: aruco-token-glow 3s infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes aruco-token-glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(74, 158, 255, 0.8);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 15px rgba(74, 158, 255, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+/* ArUco Marker Type Indicators on Tokens */
+.token[data-aruco-type="player"]::after {
+    content: "P";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    background: #4caf50;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.token[data-aruco-type="item"]::after {
+    content: "I";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    background: #ff9800;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.token[data-aruco-type="custom"]::after {
+    content: "C";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    background: #9c27b0;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ===========================================
+   Module Settings Styling
+   =========================================== */
+
+/* ArUco Tracker settings in module configuration */
+.module-settings .aruco-tracker-settings {
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(74, 158, 255, 0.05);
+}
+
+.module-settings .aruco-tracker-settings h3 {
+    color: #4a9eff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* ===========================================
+   Loading and Connection States
+   =========================================== */
+
+/* Loading spinner for connection attempts */
+.aruco-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #4a9eff;
+    animation: aruco-spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes aruco-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Connection quality indicators */
+.aruco-connection-quality {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+}
+
+.aruco-signal-bar {
+    width: 3px;
+    height: 8px;
+    background: #666;
+    margin-left: 1px;
+    border-radius: 1px;
+    transition: background 0.3s ease;
+}
+
+.aruco-signal-bar.active {
+    background: #4caf50;
+}
+
+.aruco-signal-bar:nth-child(2) { height: 10px; }
+.aruco-signal-bar:nth-child(3) { height: 12px; }
+.aruco-signal-bar:nth-child(4) { height: 14px; }
+
+/* ===========================================
+   Responsive Design
+   =========================================== */
+
+@media (max-width: 600px) {
+    .aruco-tracker-dialog {
+        min-width: 300px;
+        max-width: 95vw;
+    }
+    
+    .aruco-tracker-dialog .window-content {
+        padding: 10px;
+    }
+    
+    .aruco-action-buttons button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .aruco-tracked-markers {
+        max-height: 150px;
+    }
+}
+
+/* ===========================================
+   Dark Theme Compatibility
+   =========================================== */
+
+.dark .aruco-tracker-dialog .window-content {
+    background: linear-gradient(135deg, #0d1117 0%, #1f2937 100%);
+    color: #e5e7eb;
+}
+
+.dark .aruco-tracker-dialog h3 {
+    color: #60a5fa;
+    border-bottom-color: #60a5fa;
+}
+
+.dark .aruco-tracker-dialog h4 {
+    color: #f87171;
+    border-left-color: #f87171;
+}
+
+/* ===========================================
+   High Contrast Mode
+   =========================================== */
+
+@media (prefers-contrast: high) {
+    .aruco-tracker-dialog .window-content {
+        background: #000;
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    
+    .aruco-tracker-dialog h3,
+    .aruco-tracker-dialog h4 {
+        color: #fff;
+        border-color: #fff;
+    }
+    
+    .aruco-action-buttons button {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+    }
+    
+    .aruco-action-buttons button:hover {
+        background: #000;
+        color: #fff;
+    }
+}
+
+/* ===========================================
+   Print Styles (for documentation)
+   =========================================== */
+
+@media print {
+    .aruco-tracker-dialog,
+    .aruco-action-buttons,
+    .control-tool[data-tool="aruco-tracker-status"] {
+        display: none !important;
+    }
+}

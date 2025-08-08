@@ -1,0 +1,148 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="markerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a9eff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357abd;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#4a9eff;stop-opacity:0.6" />
+      <stop offset="70%" style="stop-color:#4a9eff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#4a9eff;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Filter for drop shadow -->
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Filter for glow effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bgGradient)" stroke="#4a9eff" stroke-width="2" filter="url(#dropshadow)"/>
+  
+  <!-- Subtle glow effect -->
+  <circle cx="64" cy="64" r="55" fill="url(#glowGradient)" opacity="0.3"/>
+  
+  <!-- Main ArUco marker (larger central marker) -->
+  <g transform="translate(64,64)">
+    <!-- Outer border -->
+    <rect x="-18" y="-18" width="36" height="36" fill="url(#markerGradient)" stroke="#333" stroke-width="1" rx="2" filter="url(#dropshadow)"/>
+    
+    <!-- ArUco pattern (4x4 grid simulating ID 15) -->
+    <!-- Row 1 -->
+    <rect x="-15" y="-15" width="6" height="6" fill="#000"/>
+    <rect x="-6" y="-15" width="6" height="6" fill="#fff"/>
+    <rect x="3" y="-15" width="6" height="6" fill="#000"/>
+    <rect x="12" y="-15" width="6" height="6" fill="#fff"/>
+    
+    <!-- Row 2 -->
+    <rect x="-15" y="-6" width="6" height="6" fill="#fff"/>
+    <rect x="-6" y="-6" width="6" height="6" fill="#000"/>
+    <rect x="3" y="-6" width="6" height="6" fill="#fff"/>
+    <rect x="12" y="-6" width="6" height="6" fill="#000"/>
+    
+    <!-- Row 3 -->
+    <rect x="-15" y="3" width="6" height="6" fill="#000"/>
+    <rect x="-6" y="3" width="6" height="6" fill="#fff"/>
+    <rect x="3" y="3" width="6" height="6" fill="#000"/>
+    <rect x="12" y="3" width="6" height="6" fill="#fff"/>
+    
+    <!-- Row 4 -->
+    <rect x="-15" y="12" width="6" height="6" fill="#fff"/>
+    <rect x="-6" y="12" width="6" height="6" fill="#000"/>
+    <rect x="3" y="12" width="6" height="6" fill="#fff"/>
+    <rect x="12" y="12" width="6" height="6" fill="#000"/>
+  </g>
+  
+  <!-- Corner markers (smaller) -->
+  <!-- Top-left corner marker -->
+  <g transform="translate(25,25)">
+    <rect x="-6" y="-6" width="12" height="12" fill="url(#markerGradient)" stroke="#333" stroke-width="0.5" rx="1"/>
+    <rect x="-4" y="-4" width="3" height="3" fill="#000"/>
+    <rect x="-0.5" y="-4" width="3" height="3" fill="#fff"/>
+    <rect x="-4" y="-0.5" width="3" height="3" fill="#fff"/>
+    <rect x="-0.5" y="-0.5" width="3" height="3" fill="#000"/>
+  </g>
+  
+  <!-- Top-right corner marker -->
+  <g transform="translate(103,25)">
+    <rect x="-6" y="-6" width="12" height="12" fill="url(#markerGradient)" stroke="#333" stroke-width="0.5" rx="1"/>
+    <rect x="-4" y="-4" width="3" height="3" fill="#fff"/>
+    <rect x="-0.5" y="-4" width="3" height="3" fill="#000"/>
+    <rect x="-4" y="-0.5" width="3" height="3" fill="#000"/>
+    <rect x="-0.5" y="-0.5" width="3" height="3" fill="#fff"/>
+  </g>
+  
+  <!-- Bottom-left corner marker -->
+  <g transform="translate(25,103)">
+    <rect x="-6" y="-6" width="12" height="12" fill="url(#markerGradient)" stroke="#333" stroke-width="0.5" rx="1"/>
+    <rect x="-4" y="-4" width="3" height="3" fill="#000"/>
+    <rect x="-0.5" y="-4" width="3" height="3" fill="#fff"/>
+    <rect x="-4" y="-0.5" width="3" height="3" fill="#fff"/>
+    <rect x="-0.5" y="-0.5" width="3" height="3" fill="#000"/>
+  </g>
+  
+  <!-- Bottom-right corner marker -->
+  <g transform="translate(103,103)">
+    <rect x="-6" y="-6" width="12" height="12" fill="url(#markerGradient)" stroke="#333" stroke-width="0.5" rx="1"/>
+    <rect x="-4" y="-4" width="3" height="3" fill="#fff"/>
+    <rect x="-0.5" y="-4" width="3" height="3" fill="#000"/>
+    <rect x="-4" y="-0.5" width="3" height="3" fill="#000"/>
+    <rect x="-0.5" y="-0.5" width="3" height="3" fill="#fff"/>
+  </g>
+  
+  <!-- Tracking crosshairs/reticle -->
+  <g stroke="url(#accentGradient)" stroke-width="2" fill="none" opacity="0.8" filter="url(#glow)">
+    <!-- Horizontal crosshair -->
+    <line x1="35" y1="64" x2="50" y2="64"/>
+    <line x1="78" y1="64" x2="93" y2="64"/>
+    
+    <!-- Vertical crosshair -->
+    <line x1="64" y1="35" x2="64" y2="50"/>
+    <line x1="64" y1="78" x2="64" y2="93"/>
+    
+    <!-- Corner brackets -->
+    <polyline points="35,30 35,35 30,35"/>
+    <polyline points="93,30 93,35 98,35"/>
+    <polyline points="35,98 35,93 30,93"/>
+    <polyline points="93,98 93,93 98,93"/>
+  </g>
+  
+  <!-- Central tracking dot -->
+  <circle cx="64" cy="64" r="3" fill="url(#accentGradient)" filter="url(#glow)"/>
+  
+  <!-- Detection indicator rings -->
+  <g fill="none" stroke="url(#accentGradient)" stroke-width="1" opacity="0.4">
+    <circle cx="64" cy="64" r="25">
+      <animate attributeName="r" values="25;28;25" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="64" cy="64" r="35">
+      <animate attributeName="r" values="35;38;35" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.05;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Module identifier text (very subtle) -->
+  <text x="64" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#4a9eff" opacity="0.6" font-weight="bold">ArUco</text>
+</svg>

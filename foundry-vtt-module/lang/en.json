@@ -1,0 +1,327 @@
+{
+  "aruco-tracker": {
+    "title": "ArUco Token Tracker",
+    "description": "Integrates physical ArUco marker tracking with Foundry VTT tokens for hybrid tabletop gaming",
+    
+    "settings": {
+      "trackerHost": {
+        "name": "ArUco Tracker Host",
+        "hint": "IP address or hostname of the ArUco tracker device (Raspberry Pi or computer running the tracking software)"
+      },
+      "websocketPort": {
+        "name": "WebSocket Port", 
+        "hint": "Port number for WebSocket connection to the ArUco tracker (default: 30001)"
+      },
+      "autoCreateTokens": {
+        "name": "Auto-Create Tokens",
+        "hint": "Automatically create new tokens when ArUco markers are detected for the first time"
+      },
+      "tokenImagePath": {
+        "name": "Default Token Image",
+        "hint": "Default image path for auto-created tokens when no specific type is detected"
+      },
+      "playerTokenImage": {
+        "name": "Player Token Image", 
+        "hint": "Specific image path for player tokens (ArUco marker IDs 10-25)"
+      },
+      "itemTokenImage": {
+        "name": "Item Token Image",
+        "hint": "Specific image path for item/NPC tokens (ArUco marker IDs 30-61)"
+      },
+      "enableCORS": {
+        "name": "Enable CORS Headers",
+        "hint": "Add Cross-Origin Resource Sharing headers for requests from the tracking device"
+      },
+      "updateThrottle": {
+        "name": "Update Throttle (ms)",
+        "hint": "Minimum time in milliseconds between position updates to prevent excessive network traffic"
+      },
+      "confidenceThreshold": {
+        "name": "Confidence Threshold",
+        "hint": "Minimum detection confidence (0.0-1.0) required to accept marker position updates"
+      }
+    },
+
+    "ui": {
+      "controls": {
+        "statusButton": {
+          "title": "ArUco Tracker Status",
+          "tooltip": "View connection status and tracked markers"
+        }
+      },
+      
+      "dialog": {
+        "title": "ArUco Tracker Status",
+        "sections": {
+          "connection": "Connection Status",
+          "statistics": "Statistics", 
+          "schema": "ArUco Marker Schema",
+          "optimization": "Optimization Benefits",
+          "diagnostics": "Network Diagnostics",
+          "trackedMarkers": "Tracked ArUco Markers",
+          "troubleshooting": "Troubleshooting"
+        },
+        
+        "labels": {
+          "trackerHost": "Tracker Host",
+          "connection": "Connection",
+          "trackedTokens": "Tracked Tokens", 
+          "activeScene": "Active Scene",
+          "foundryHost": "Foundry Host",
+          "websocketUrl": "WebSocket URL",
+          "lastConnectionAttempt": "Last Connection Attempt",
+          "markerType": "Type",
+          "confidence": "Confidence",
+          "lastSeen": "Last Seen",
+          "position": "Position"
+        },
+        
+        "values": {
+          "connected": "Connected ✓",
+          "disconnected": "Disconnected ✗", 
+          "connecting": "Connecting...",
+          "none": "None",
+          "never": "Never",
+          "unknown": "Unknown"
+        },
+        
+        "buttons": {
+          "reconnect": "Reconnect to Tracker",
+          "testConnection": "Test Connection", 
+          "clearCache": "Clear Token Cache",
+          "close": "Close"
+        }
+      }
+    },
+
+    "markers": {
+      "types": {
+        "corner": "Corner",
+        "player": "Player", 
+        "item": "Item",
+        "custom": "Custom",
+        "unknown": "Unknown"
+      },
+      
+      "schema": {
+        "corner": {
+          "description": "Corner markers (IDs 0-3) - Used for calibration only",
+          "range": "IDs 0-3",
+          "purpose": "Camera calibration and table boundary detection"
+        },
+        "player": {
+          "description": "Player tokens (IDs 10-25) - Up to 16 players maximum", 
+          "range": "IDs 10-25",
+          "purpose": "Player character representations"
+        },
+        "item": {
+          "description": "Item/NPC tokens (IDs 30-61) - 32 standard game elements",
+          "range": "IDs 30-61", 
+          "purpose": "Enemies, NPCs, objects, and interactive elements"
+        },
+        "custom": {
+          "description": "Custom tokens (IDs 62+) - User-defined markers",
+          "range": "IDs 62+",
+          "purpose": "Custom game elements and special tokens"
+        }
+      },
+      
+      "names": {
+        "corner": {
+          "0": "Corner_0",
+          "1": "Corner_1", 
+          "2": "Corner_2",
+          "3": "Corner_3"
+        },
+        "items": {
+          "30": "Goblin",
+          "31": "Orc", 
+          "32": "Skeleton",
+          "33": "Dragon",
+          "34": "Troll",
+          "35": "Wizard_Enemy",
+          "36": "Beast", 
+          "37": "Demon",
+          "40": "Treasure_Chest",
+          "41": "Magic_Item",
+          "42": "Gold_Pile", 
+          "43": "Potion",
+          "44": "Weapon",
+          "45": "Armor",
+          "46": "Scroll",
+          "47": "Key",
+          "50": "NPC_Merchant", 
+          "51": "NPC_Guard",
+          "52": "NPC_Noble",
+          "53": "NPC_Innkeeper",
+          "54": "NPC_Priest",
+          "55": "Door",
+          "56": "Trap", 
+          "57": "Fire_Hazard",
+          "58": "Altar",
+          "59": "Portal",
+          "60": "Vehicle",
+          "61": "Objective"
+        }
+      }
+    },
+
+    "notifications": {
+      "connection": {
+        "connected": "ArUco Tracker connected to {host}",
+        "disconnected": "ArUco Tracker disconnected from {host}",
+        "reconnecting": "Attempting to reconnect to ArUco tracker...",
+        "failed": "Failed to connect to ArUco tracker at {host}:{port}",
+        "timeout": "Connection to ArUco tracker timed out"
+      },
+      
+      "tokens": {
+        "created": "Created {type} token: {name} (ArUco {id})",
+        "updated": "Updated token {name} position: ({x}, {y})",
+        "notFound": "No token found for ArUco marker ID {id}",
+        "creationFailed": "Failed to create token for ArUco marker {id}",
+        "autoCreateDisabled": "Auto-create tokens is disabled - ArUco {id} ignored"
+      },
+      
+      "testing": {
+        "starting": "Testing connection to {host}:{port}...",
+        "successful": "✓ Connection test successful to {host}:{port}",
+        "failed": "✗ Connection test failed: {error}",
+        "timeout": "Check if ArUco tracker is running and accessible from this network"
+      },
+      
+      "errors": {
+        "websocketError": "WebSocket error: {error}",
+        "invalidMessage": "Received invalid message from ArUco tracker",
+        "sceneNotFound": "Scene not found: {sceneId}",
+        "tokenUpdateFailed": "Failed to update token position: {error}"
+      }
+    },
+
+    "console": {
+      "messages": {
+        "initializing": "ArUco Tracker | Initializing module",
+        "connecting": "ArUco Tracker | Attempting connection to: {url}",
+        "connected": "ArUco Tracker | WebSocket connected to remote tracker", 
+        "disconnected": "ArUco Tracker | WebSocket disconnected (Code: {code})",
+        "reconnecting": "ArUco Tracker | Attempting reconnection...",
+        "handshake": "ArUco Tracker | Received handshake from tracker",
+        "confirmedSystem": "ArUco Tracker | Confirmed ArUco marker system",
+        "tokenCreated": "ArUco Tracker | Created token for ArUco {id}: {token}",
+        "tokenUpdated": "ArUco Tracker | Updated token {name} (ArUco {id}) to ({x}, {y})",
+        "tokenMoved": "ArUco Tracker | Moved {name}: {oldPos} -> ({x}, {y})",
+        "unknownMessage": "ArUco Tracker | Unknown message type: {type}",
+        "cornerSkipped": "ArUco Tracker | Skipped corner marker (ID {id}) - calibration only",
+        "throttled": "ArUco Tracker | Update throttled for ArUco {id}",
+        "sceneChanged": "ArUco Tracker | Scene changed to: {sceneName}",
+        "cacheCleared": "ArUco Tracker | Token cache cleared ({count} entries removed)"
+      },
+      
+      "warnings": {
+        "noToken": "ArUco Tracker | No token found for ArUco ID: {id}",
+        "updateError": "ArUco Tracker | Error updating token: {error}",
+        "creationError": "ArUco Tracker | Failed to create token: {error}",
+        "connectionError": "ArUco Tracker | WebSocket error: {error}",
+        "invalidJson": "ArUco Tracker | Invalid JSON from {client}: {error}",
+        "lowConfidence": "ArUco Tracker | Low confidence marker detection: {id} ({confidence})"
+      }
+    },
+
+    "help": {
+      "optimization": {
+        "title": "Optimization Benefits",
+        "benefits": [
+          "✓ Smaller physical markers (15mm minimum)",
+          "✓ Faster detection performance", 
+          "✓ Total standard IDs: 52 (vs 90+ previously)",
+          "✓ Better for tabletop gaming use cases",
+          "✓ Reduced marker printing costs",
+          "✓ Improved camera detection reliability"
+        ]
+      },
+      
+      "troubleshooting": {
+        "steps": [
+          "Ensure ArUco tracker is running on {host}",
+          "Check that port {port} is open and accessible", 
+          "Verify network connectivity between Foundry and tracker",
+          "Check firewall settings on both machines",
+          "Make sure ArUco markers are properly generated and printed",
+          "Ensure adequate lighting for marker detection",
+          "Verify marker orientation and surface flatness",
+          "Check camera positioning and focus"
+        ]
+      },
+      
+      "quickStart": {
+        "title": "Quick Start Guide",
+        "steps": [
+          "1. Print ArUco markers (IDs 0-3 for corners, 10+ for tokens)",
+          "2. Set up camera above play area with good lighting",
+          "3. Place corner markers (IDs 0-3) at table boundaries", 
+          "4. Configure tracker host IP in module settings",
+          "5. Test connection using the status dialog",
+          "6. Place token markers and watch them appear in Foundry!"
+        ]
+      }
+    },
+
+    "api": {
+      "commands": {
+        "getStatus": "Get current connection and tracking status",
+        "reconnect": "Force reconnection to ArUco tracker",
+        "testConnection": "Test network connectivity to tracker",
+        "getTrackedTokens": "List all currently tracked ArUco markers",
+        "getMarkerSchema": "Display the ArUco marker ID schema",
+        "clearCache": "Clear the tracked token cache"
+      },
+      
+      "examples": {
+        "getStatus": "game.modules.get('aruco-tracker').api.getStatus()",
+        "reconnect": "game.modules.get('aruco-tracker').api.reconnect()",
+        "testConnection": "game.modules.get('aruco-tracker').api.testConnection()"
+      }
+    },
+
+    "diagnostics": {
+      "connectionQuality": {
+        "excellent": "Excellent (100%)",
+        "good": "Good (75-99%)", 
+        "fair": "Fair (50-74%)",
+        "poor": "Poor (25-49%)",
+        "failed": "Failed (0-24%)"
+      },
+      
+      "networkStatus": {
+        "stable": "Stable",
+        "unstable": "Unstable", 
+        "degraded": "Degraded",
+        "offline": "Offline"
+      },
+      
+      "trackerStatus": {
+        "ready": "Ready",
+        "calibrating": "Calibrating",
+        "tracking": "Tracking",
+        "error": "Error",
+        "offline": "Offline"
+      }
+    },
+
+    "integration": {
+      "protocols": {
+        "websocket": "WebSocket Real-time Protocol",
+        "http": "HTTP REST API (Future)",
+        "file": "File System Polling (Backup)"
+      },
+      
+      "messageTypes": {
+        "foundryReady": "Foundry VTT Ready Signal",
+        "tokenUpdate": "Token Position Update",
+        "handshake": "Tracker Handshake",
+        "calibrationData": "Camera Calibration Data",
+        "diagnostics": "System Diagnostics"
+      }
+    }
+  }
+}
