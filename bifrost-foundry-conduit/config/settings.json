@@ -1,0 +1,13 @@
+{
+  "userSettings" : {
+    "heimdallHost": "localhost",
+    "websocketPort": 30001,
+    "autoCreateTokens": true,
+    "tokenImagePath": "icons/svg/mystery-man.svg",
+    "playerTokenImage": "icons/svg/mystery-man.svg",
+    "itemTokenImage": "icons/svg/item-bag.svg",
+    "autoConnect": true,
+    "enableHeartbeat": true,
+    "debugMode": false
+  }
+}

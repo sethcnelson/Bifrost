@@ -1,0 +1,43 @@
+{
+    "type": "token_detected",
+    "marker_id": "aruco_001",
+    "token_name": "Player 1",    // Must match existing Actor name
+    "x": 400,
+    "y": 300,
+    "token_type": "player",      // Links to Actor
+    "metadata": {
+        "rotation": 45,
+        "size": 1.0
+    }
+}
+
+{
+    "type": "token_detected",
+    "marker_id": "aruco_002",
+    "token_name": "Goblin Scout",
+    "x": 200,
+    "y": 200,
+    "token_type": "enemy",       // Standalone token
+    "metadata": {
+        "image": "tokens/goblin.png",
+        "size": 1.0
+    }
+}
+
+{
+    "type": "token_detected",
+    "marker_id": "aruco_003",
+    "token_name": "Magic Sword",
+    "x": 350,
+    "y": 150,
+    "token_type": "item",        // Standalone token
+    "metadata": {
+        "size": 0.5
+    }
+}
+
+// Token removed from table
+{
+    "type": "token_lost",
+    "marker_id": "aruco_001"
+}
