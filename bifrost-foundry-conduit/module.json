@@ -23,7 +23,7 @@
   ],
   "socket": true,
   "styles": [
-    "main.css"
+    "styles/main.css"
   ],
   "languages": [
     {
