@@ -33,7 +33,7 @@
     }
   ],
   "url": "https://github.com/sethcnelson/Bifrost/bifrost-foundry-conduit",
-  "manifest": "https://github.com/sethcnelson/Bifrost/releases/latest/bifrost-foundry-conduit/module.json",
+  "manifest": "https://github.com/sethcnelson/Bifrost/releases/latest/download/module.json",
   "download": "https://github.com/sethcnelson/Bifrost/releases/latest/download/bifrost-foundry-conduit.zip",
   "license": "LICENSE",
   "readme": "README.md",
