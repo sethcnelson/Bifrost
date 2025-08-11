@@ -90,17 +90,17 @@
 
 1. **Copy the manifest URL**:
    ```
-   https://github.com/yourorg/bifrost-foundry/releases/latest/download/module.json
+   https://github.com/sethcnelson/bifrost-foundry-conduit/releases/latest/download/module.json
    ```
 2. **In Foundry VTT**, go to **Add-On Modules → Install Module**
 3. **Paste the manifest URL** and click **Install**
 
 ### **Method 3: Manual Installation**
 
-1. **Download the latest release** from [GitHub Releases](https://github.com/yourorg/bifrost-foundry/releases)
+1. **Download the latest release** from [GitHub Releases](https://github.com/sethcnelson/bifrost-foundry-conduit/releases)
 2. **Extract to your Foundry modules directory**:
    ```
-   [Foundry Data]/modules/bifrost/
+   [Foundry Data]/modules/bifrost-foundry-conduit/
    ```
 3. **Restart Foundry VTT**
 4. **Enable the module** in your world settings
