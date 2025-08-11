@@ -1,0 +1,295 @@
+{
+  "description": "Sample WebSocket messages for Heimdall ArUco tracking system communication with Bifrost",
+  "messages": {
+    "from_bifrost_to_heimdall": {
+      "handshake": {
+        "type": "handshake",
+        "client": "bifrost",
+        "version": "1.0.0",
+        "foundry_version": "11.315",
+        "scene_id": "scene123abc",
+        "timestamp": 1723392000000
+      },
+      "ping": {
+        "type": "ping",
+        "timestamp": 1723392000000
+      },
+      "request_token_list": {
+        "id": "req_001",
+        "type": "request_token_list",
+        "parameters": {
+          "include_metadata": true,
+          "filter_by_scene": true
+        }
+      },
+      "response_success": {
+        "id": "msg_001",
+        "success": true,
+        "data": {
+          "scene": {
+            "id": "scene123abc",
+            "name": "Dungeon Level 1",
+            "width": 4000,
+            "height": 3000,
+            "grid_size": 100,
+            "grid_type": 1,
+            "token_count": 5
+          }
+        }
+      },
+      "response_error": {
+        "id": "msg_002",
+        "success": false,
+        "error": "No active scene"
+      }
+    },
+    "from_heimdall_to_bifrost": {
+      "pong": {
+        "type": "pong",
+        "timestamp": 1723392000000
+      },
+      "marker_detected": {
+        "id": "det_001",
+        "type": "marker_detected",
+        "marker_id": 42,
+        "token_name": "Orc Warrior",
+        "token_type": "npc",
+        "x": 1250.5,
+        "y": 987.3,
+        "metadata": {
+          "confidence": 0.95,
+          "size": "medium",
+          "rotation": 45.2
+        },
+        "timestamp": 1723392000000
+      },
+      "marker_updated": {
+        "id": "upd_001",
+        "type": "marker_updated",
+        "marker_id": 42,
+        "x": 1275.8,
+        "y": 1012.1,
+        "metadata": {
+          "confidence": 0.92,
+          "rotation": 47.1
+        },
+        "timestamp": 1723392001000
+      },
+      "marker_lost": {
+        "id": "lost_001",
+        "type": "marker_lost",
+        "marker_id": 42,
+        "timestamp": 1723392002000
+      },
+      "calibration_update": {
+        "id": "cal_001",
+        "type": "calibration_update",
+        "corners": [
+          {"x": 0, "y": 0},
+          {"x": 1920, "y": 0},
+          {"x": 1920, "y": 1080},
+          {"x": 0, "y": 1080}
+        ],
+        "scene_bounds": {
+          "width": 4000,
+          "height": 3000,
+          "grid_size": 100
+        },
+        "timestamp": 1723392000000
+      },
+      "get_scene_info": {
+        "id": "info_001",
+        "type": "get_scene_info",
+        "timestamp": 1723392000000
+      },
+      "get_tracked_tokens": {
+        "id": "tokens_001",
+        "type": "get_tracked_tokens",
+        "timestamp": 1723392000000
+      },
+      "clear_all_tracking": {
+        "id": "clear_001",
+        "type": "clear_all_tracking",
+        "timestamp": 1723392000000
+      },
+      "query_tokens": {
+        "id": "query_001",
+        "type": "query_tokens",
+        "filters": {
+          "scene_id": "scene123abc",
+          "token_type": "character"
+        },
+        "timestamp": 1723392000000
+      },
+      "compare_token_state": {
+        "id": "comp_001",
+        "type": "compare_token_state",
+        "tokens": [
+          {
+            "marker_id": 42,
+            "token_name": "Orc Warrior",
+            "x": 1250.5,
+            "y": 987.3,
+            "last_seen": 1723392000000
+          },
+          {
+            "marker_id": 17,
+            "token_name": "Goblin Scout",
+            "x": 800.2,
+            "y": 1200.7,
+            "last_seen": 1723391995000
+          }
+        ],
+        "timestamp": 1723392000000
+      }
+    },
+    "response_examples": {
+      "scene_info_response": {
+        "id": "info_001",
+        "success": true,
+        "scene": {
+          "id": "scene123abc",
+          "name": "Dungeon Level 1",
+          "width": 4000,
+          "height": 3000,
+          "grid_size": 100,
+          "grid_type": 1,
+          "token_count": 5
+        }
+      },
+      "tracked_tokens_response": {
+        "id": "tokens_001",
+        "success": true,
+        "tracked_tokens": [
+          {
+            "marker_id": 42,
+            "token_id": "token_abc123",
+            "token_name": "Orc Warrior",
+            "position": {"x": 1250.5, "y": 987.3},
+            "last_updated": 1723392000000,
+            "tracking_status": "active"
+          },
+          {
+            "marker_id": 17,
+            "token_id": "token_def456",
+            "token_name": "Goblin Scout",
+            "position": {"x": 800.2, "y": 1200.7},
+            "last_updated": 1723391995000,
+            "tracking_status": "lost"
+          }
+        ]
+      },
+      "marker_detected_response": {
+        "id": "det_001",
+        "success": true,
+        "token_id": "token_abc123",
+        "message": "Token created and positioned"
+      },
+      "marker_updated_response": {
+        "id": "upd_001",
+        "success": true,
+        "message": "Token position updated"
+      },
+      "marker_lost_response": {
+        "id": "lost_001",
+        "success": true,
+        "message": "Token removed from tracking"
+      },
+      "calibration_response": {
+        "id": "cal_001",
+        "success": true,
+        "message": "Calibration updated"
+      },
+      "clear_tracking_response": {
+        "id": "clear_001",
+        "success": true,
+        "message": "All tracking cleared"
+      },
+      "token_comparison_response": {
+        "id": "comp_001",
+        "success": true,
+        "comparison": {
+          "matches": 1,
+          "missing_in_foundry": [],
+          "missing_in_heimdall": [
+            {
+              "token_id": "token_ghi789",
+              "token_name": "Player Character",
+              "position": {"x": 2000, "y": 1500}
+            }
+          ],
+          "position_differences": []
+        }
+      }
+    },
+    "error_examples": {
+      "unknown_message_type": {
+        "id": "unknown_001",
+        "success": false,
+        "error": "Unknown message type: invalid_type"
+      },
+      "processing_error": {
+        "id": "error_001",
+        "success": false,
+        "error": "Token not found in scene"
+      },
+      "no_active_scene": {
+        "id": "scene_error_001",
+        "success": false,
+        "error": "No active scene"
+      }
+    }
+  },
+  "message_flow_examples": {
+    "connection_establishment": [
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "handshake"
+      },
+      {
+        "direction": "heimdall -> bifrost",
+        "message": "get_scene_info"
+      },
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "scene_info_response"
+      }
+    ],
+    "token_tracking_cycle": [
+      {
+        "direction": "heimdall -> bifrost",
+        "message": "marker_detected"
+      },
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "marker_detected_response"
+      },
+      {
+        "direction": "heimdall -> bifrost",
+        "message": "marker_updated"
+      },
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "marker_updated_response"
+      },
+      {
+        "direction": "heimdall -> bifrost",
+        "message": "marker_lost"
+      },
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "marker_lost_response"
+      }
+    ],
+    "heartbeat": [
+      {
+        "direction": "bifrost -> heimdall",
+        "message": "ping"
+      },
+      {
+        "direction": "heimdall -> bifrost",
+        "message": "pong"
+      }
+    ]
+  }
+}

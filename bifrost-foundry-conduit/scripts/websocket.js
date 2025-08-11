@@ -7,22 +7,29 @@ import { BifrostTokenSync } from "./token-sync.js";
 import { Utils } from "./utils.js";
 
 export class BifrostWebSocketHandler {
-    constructor(config) {
+    constructor() {
         this.socket = null;
         this.isConnected = false;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
         this.reconnectDelay = 5000; // 5 seconds
         this.heartbeatInterval = null;
-        this.moduleConfig = config;
+        this.getTrackedTokenCount = 0; // Placeholder, will be set in initialize
+        
         this.connectionConfig = {
-            url: `ws://${this.moduleConfig.host}:${this.moduleConfig.port}`,
-            port: this.moduleConfig.port,
-            host: this.moduleConfig.host
+            url: `ws://${game.settings.get('bifrost', 'heimdallHost') }:${game.settings.get('bifrost', 'heimdallPort') }`,
+            port: game.settings.get('bifrost', 'heimdallPort'),
+            host: game.settings.get('bifrost', 'heimdallHost')
         };
 
         this.bifrostTokenManager = new BifrostTokenManager(); // Token manager instance
         this.bifrostTokenSync = new BifrostTokenSync(this); // Token sync instance
+    }
+
+    initialize() {
+        this.bifrostTokenManager.initialize();
+
+        this.getTrackedTokenCount = this.bifrostTokenManager.getTrackedTokenCount();
     }
 
 
@@ -95,7 +102,7 @@ export class BifrostWebSocketHandler {
         }
 
         // Notify UI
-        ui.notifications.info('Bifrost: Connected to Heimdall tracking system');
+        ui.notifications.info("Bifrost: Our Realm basks in the light of Heimdall's Sight!");
         
         // Fire hook for other modules
         Hooks.callAll('bifrost.connected', this);
@@ -285,6 +292,8 @@ export class BifrostWebSocketHandler {
         };
     }
 
+    
+
     /**
      * Clear all token tracking
      */
@@ -304,7 +313,7 @@ export class BifrostWebSocketHandler {
         this.stopHeartbeat();
         
         Utils.log("WebSocket",`Connection closed: ${event.code} - ${event.reason}`);
-        ui.notifications.warn('Bifrost: Connection to Heimdall lost');
+        ui.notifications.warn('Bifrost: The Sight of Heimdall does not reach us..');
 
         // Attempt reconnection if not intentional close
         if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
@@ -319,8 +328,8 @@ export class BifrostWebSocketHandler {
      * WebSocket error occurred
      */
     onError(event) {
-        Utils.log("WebSocket",`WebSocket error occurred`, 'error');
-        ui.notifications.error('Bifrost: WebSocket connection error');
+        Utils.log('WebSocket',`WebSocket error occurred`, 'error');
+        ui.notifications.error("Bifrost: Heimdall's unfailing Sight is failed!");
     }
 
     /**
@@ -330,15 +339,15 @@ export class BifrostWebSocketHandler {
         this.reconnectAttempts++;
         const delay = this.reconnectDelay * this.reconnectAttempts;
         
-        Utils.log("WebSocket",`Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
+        Utils.log('WebSocket',`Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
         
         setTimeout(async () => {
             const connected = await this.connect();
             if (!connected && this.reconnectAttempts < this.maxReconnectAttempts) {
                 this.attemptReconnect();
             } else if (!connected) {
-                Utils.log("WebSocket",'Max reconnection attempts reached', 'error');
-                ui.notifications.error('Bifrost: Unable to reconnect to Heimdall');
+                Utils.log('WebSocket','Max reconnection attempts reached', 'error');
+                ui.notifications.error('Bifrost: Heimdall has forsaken this realm to the darkness!');
             }
         }, delay);
     }
@@ -350,17 +359,17 @@ export class BifrostWebSocketHandler {
      */
     send(message) {
         if (!this.isConnected || !this.socket) {
-            Utils.log("WebSocket",'Cannot send message: not connected', 'warn');
+            Utils.log('WebSocket','Cannot send message: not connected', 'warn');
             return false;
         }
 
         try {
             const messageString = JSON.stringify(message);
             this.socket.send(messageString);
-            Utils.log("WebSocket",`Sent message: ${message.type}`, 'debug');
+            Utils.log('WebSocket',`Sent message: ${message.type}`, 'debug');
             return true;
         } catch (error) {
-            Utils.log("WebSocket",`Failed to send message: ${error.message}`, 'error');
+            Utils.log('WebSocket',`Failed to send message: ${error.message}`, 'error');
             return false;
         }
     }
@@ -399,7 +408,7 @@ export class BifrostWebSocketHandler {
             this.socket = null;
         }
         this.bifrostTokenManager.clearTracking();
-        Utils.log("WebSocket",'Disconnected from Heimdall');
+        Utils.log('WebSocket','Disconnected from Heimdall');
         this.isConnected = false;
     }
 

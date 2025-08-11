@@ -1,29 +1,9 @@
-// Foundry VTT Bifrost Module
-// Place this in: Data/modules/bifrost-foundry-vtt/bifrost-foundry-vtt.js
-// 
-// Open the Developer Tools by pressing F12 and consult the Console tab. Note that in the below example - the statements are logged at 
-// different points in time. Depending on what scope of data you need to operate on - you may want to condition execution of module 
-// code on certain events (called "hooks") which allow for module logic to interrupt, augment, or replace the default behavior of the VTT platform.
-/*
-console.log("Hello World! This code runs immediately when the file is loaded.");
-
-
-Might be useful to add some hooks to react to Foundry events:
-
-
-// React to token updates
-Hooks.on("updateToken", (tokenDocument, change, options, userId) => {
-    // Handle external controller state updates
-});
-
-// React to token selection
-Hooks.on("controlToken", (token, controlled) => {
-    // Update controller when tokens are selected/deselected
-});
-}); */
 
 import { BifrostWebSocketHandler } from "./websocket.js";
 import { Utils } from "./utils.js";
+import { BifrostControlButtons } from "./controls.js";
+
+console.log('Bifrost | Module initialization script started');
 
 class BifrostModule {
     constructor() {
@@ -31,10 +11,6 @@ class BifrostModule {
         this.initialized = false;
         this.ready = false;
         
-        
-        // Settings variables
-        this.settings = {};
-
         // Sub-system references
         this.webSocketHandler = null;
     }
@@ -48,27 +24,24 @@ class BifrostModule {
         
         try {
             // Load configuration and populate settings
-            const config = await Utils.loadConfiguration();
-            this.settings = config;
+            //const config = await Utils.loadConfiguration();
+            //this.settings = config;
 
             // Register module settings
-            //this.registerSettings();
+            this.registerSettings();
 
             
             // Initialize core systems (but don't start them yet)
-            this.webSocketHandler = new BifrostWebSocketHandler(config);
+            this.webSocketHandler = new BifrostWebSocketHandler();
             this.tokenManager = this.webSocketHandler.bifrostTokenManager;
             this.tokenSync = this.webSocketHandler.bifrostTokenSync;
 
             // Register API endpoints
-            //this.registerAPI();
+            this.registerAPI();
 
             // Set up hooks for later lifecycle events
             this.registerHooks();
             
-            // Add UI controls
-            this.addControls();
-
             this.initialized = true;
             console.log('Bifrost | Module initialized successfully');
 
@@ -98,13 +71,18 @@ class BifrostModule {
         console.log('Bifrost | Starting module...');
 
         try {
-            
+            this.webSocketHandler.initialize();
+
             // Start WebSocket connection if auto-connect enabled
-            if (this.autoConnect) {
+            if (game.settings.get(this.moduleId, 'autoConnect')) {
                 setTimeout(() => {
                     this.webSocketHandler.connect();
                 }, 2000); // Delay to ensure everything is loaded
             }
+
+            // Initialize control buttons
+            this.controlButtons = new BifrostControlButtons(this);
+            this.controlButtons.initialize();
 
             this.ready = true;
             console.log('Bifrost | Module started successfully');
@@ -112,6 +90,117 @@ class BifrostModule {
         } catch (error) {
             console.error('Bifrost | Startup failed:', error);
         }
+    }
+
+    /**
+     * Register module settings
+     */
+    registerSettings() {
+        // WebSocket settings
+        game.settings.register(this.moduleId, 'heimdallHost', {
+            name: 'Heimdall Server Host',
+            hint: 'Hostname or IP address of the Heimdall server',
+            scope: 'world',
+            config: true,
+            type: String,
+            default: 'localhost'
+        });
+
+        game.settings.register(this.moduleId, 'heimdallPort', {
+            name: 'Heimdall Server Port',
+            hint: 'Port number for Heimdall WebSocket server',
+            scope: 'world',
+            config: true,
+            type: Number,
+            default: 3001
+        });
+
+        game.settings.register(this.moduleId, 'autoCreateTokens', {
+            name: 'Auto-Create Tokens',
+            hint: 'Automatically create tokens for ArUco markers when detected',
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+
+        game.settings.register(this.moduleId, 'autoConnect', {
+            name: 'Auto-Connect to Heimdall',
+            hint: 'Automatically connect to Heimdall when module loads',
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        });
+
+        game.settings.register(this.moduleId, 'autoHeartbeat', {
+            name: 'Auto Heartbeat',
+            hint: 'Automatically send heartbeat messages to Heimdall',
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+
+        game.settings.register(this.moduleId, 'debugMode', {
+            name: 'Debug Mode',
+            hint: 'Enable detailed logging for debugging',
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        });
+
+        // Hidden settings for internal data
+        game.settings.register(this.moduleId, 'calibrationData', {
+            scope: 'world',
+            config: false,
+            type: Object,
+            default: {}
+        });
+
+        console.log('Bifrost | Settings registered');
+    }
+
+
+    /**
+     * Register the module API
+     */
+    registerAPI() {
+        // Method 1: Add to game.modules (Recommended for Foundry)
+        const moduleData = game.modules.get(this.moduleId);
+        if (moduleData) {
+            moduleData.api = {
+                // Core module access
+                instance: this,
+
+                // WebSocket methods
+                connect: () => this.webSocketHandler.connect(),
+                disconnect: () => this.webSocketHandler.disconnect(),
+                getConnectionStatus: () => this.webSocketHandler.getStatus(),
+                isConnected: this.webSocketHandler.isConnected,
+                send: (message) => this.webSocketHandler.send(message),
+                getTrackedTokenCount: this.webSocketHandler.getTrackedTokenCount,
+
+                // Token management
+                tokenManager: this.tokenManager,
+                syncTokens: () => this.tokenSync.sendTokenListToHeimdall(),
+                syncPlayers: () => this.tokenSync.sendPlayerTokensToHeimdall(),
+                getTokens: (options) => this.tokenSync.getCurrentSceneTokens(options),
+
+                // Convenience methods
+                startAutoSync: (interval) => this.tokenSync.startAutoSync(interval),
+                stopAutoSync: () => this.tokenSync.stopAutoSync(),
+                clearTracking: () => this.tokenManager.clearTracking(),
+
+                // Status and debugging
+                getStatus: () => this.getModuleStatus(),
+                isReady: () => this.ready,
+                getVersion: () => moduleData.version || '1.0.0'
+            };
+        }
+
+        Utils.log('Main', 'API registered successfully');
     }
 
     /**
@@ -172,100 +261,6 @@ class BifrostModule {
         console.log('Bifrost | Hooks registered');
     }
 
-
-    addControls() {
-        // Add token controls to the scene controls
-        Hooks.on("getSceneControlButtons", (controls) => {
-            const tokenControls = controls.find(c => c.name === "token");
-            this.isConnected = this.webSocketHandler.isConnected;
-            if (tokenControls) {
-                tokenControls.tools.push({
-                    name: "bifrost-status",
-                    title: "Bifrost Status",
-                    icon: this.isConnected ? "fas fa-wifi" : "fas fa-exclamation-triangle",
-                    onClick: () => this.showStatusDialog(),
-                    button: true
-                });
-            }
-        });
-    }
-
-    showStatusDialog() {
-        const heimdallHost = this.heimdallHost;
-        const port = this.websocketPort;
-        this.tokenCache = this.tokenManager.knownTokens; // Get current token cache
-        this.isConnected = this.webSocketHandler.isConnected;
-        
-        const content = `
-            <div>
-                <h3>Bifrost Status</h3>
-                <p><strong>Heimdall Host:</strong> ${heimdallHost}:${port}</p>
-                <p><strong>Connection:</strong> ${this.isConnected ? 'Connected ✓' : 'Disconnected ✗'}</p>
-                <p><strong>Tracked Tokens:</strong> ${this.tokenCache.size}</p>
-                <p><strong>Active Scene:</strong> ${game.scenes.active?.name || 'None'}</p>
-                <p><strong>Foundry VTT Host:</strong> ${window.location.hostname}:${window.location.port || 30000}</p>
-                
-                <h4>ArUco Marker Schema (Optimized):</h4>
-                <ul style="font-size: 0.9em;">
-                    <li><strong>Corner markers:</strong> IDs 0-3 (calibration only)</li>
-                    <li><strong>Player tokens:</strong> IDs 10-25 (16 players max)</li>
-                    <li><strong>Item tokens:</strong> IDs 30-61 (32 standard items)</li>
-                    <li><strong>Custom tokens:</strong> IDs 62+ (user defined)</li>
-                </ul>
-                
-                <h4>Optimization Benefits:</h4>
-                <ul style="font-size: 0.9em;">
-                    <li>✓ Smaller physical markers (15mm minimum)</li>
-                    <li>✓ Faster detection performance</li>
-                    <li>✓ Total standard IDs: 52 (vs 90+ previously)</li>
-                    <li>✓ Better for tabletop gaming use cases</li>
-                </ul>
-                
-                <h4>Network Diagnostics:</h4>
-                <p><strong>WebSocket URL:</strong> ws://${heimdallHost}:${port}</p>
-                <p><strong>Last Connection Attempt:</strong> ${this.lastConnectionAttempt || 'Never'}</p>
-                
-                <h4>Tracked ArUco Markers:</h4>
-                ${this.tokenCache.size > 0 ? `
-                    <ul>
-                        ${Array.from(this.tokenCache.entries()).map(([arucoId, data]) => {
-                            const markerType = data.markerType || 'unknown';
-                            const typeLabel = markerType.charAt(0).toUpperCase() + markerType.slice(1);
-                            return `<li>ArUco ${arucoId} (${typeLabel}, Confidence: ${data.confidence?.toFixed(2) || 'N/A'}, Last seen: ${new Date(data.lastSeen).toLocaleTimeString()})</li>`;
-                        }).join('')}
-                    </ul>
-                ` : '<p><em>No ArUco markers currently tracked</em></p>'}
-                
-                <div style="margin-top: 15px;">
-                    <button type="button" onclick="game.modules.get('bifrost').api.testConnection()">
-                        Test Connection
-                    </button>
-                </div>
-                
-                <h4>Troubleshooting:</h4>
-                <ul style="font-size: 0.9em;">
-                    <li>Ensure Heimdall is watching from ${heimdallHost}</li>
-                    <li>Check that port ${port} is open and accessible</li>
-                    <li>Verify Heimdall can see the Foundry host over the network</li>
-                    <li>Check firewall settings on both machines</li>
-                    <li>Make sure ArUco markers are properly generated and printed</li>
-                </ul>
-            </div>
-        `;
-        
-        new Dialog({
-            title: "Bifrost Status",
-            content: content,
-            buttons: {
-                close: {
-                    label: "Close"
-                }
-            },
-            default: "close"
-        }).render(true);
-    }
-
-
     /**
      * Get overall module status
      */
@@ -308,7 +303,6 @@ class BifrostModule {
 
 }
 
-
 /**
  * MODULE INITIALIZATION
  * This is where the magic happens
@@ -316,6 +310,7 @@ class BifrostModule {
 
 // Create the module instance
 let bifrostModule;
+
 
 // Initialize during 'init' hook (early lifecycle)
 Hooks.once('init', async () => {

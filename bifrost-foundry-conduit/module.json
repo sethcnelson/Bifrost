@@ -2,7 +2,7 @@
   "id": "bifrost-foundry-conduit",
   "title": "Bifrost",
   "description": "Integrates Heimdall computer vision command and control system for hybrid tabletop gaming. The great rainbow bridge between worlds, connecting a physical game table to the virtual game in Foundry. Allows game tokens to be controlled by physical tokens and players/DM can use hand gestures to control game.",
-  "version": "0.1.0.2",
+  "version": "0.1.0.18",
   "compatibility": {
     "minimum": "11",
     "verified": "12",
@@ -15,15 +15,7 @@
     }
   ],
   "esmodules": [
-    "scripts/bifrost-foundry-conduit.js",
-    "scripts/token-manager.js",
-    "scripts/token-sync.js",
-    "scripts/websocket.js",
-    "scripts/utils.js"
-  ],
-  "socket": true,
-  "styles": [
-    "styles/main.css"
+    "scripts/bifrost-foundry-conduit.js"
   ],
   "languages": [
     {
@@ -35,12 +27,6 @@
   "url": "https://github.com/sethcnelson/Bifrost/bifrost-foundry-conduit",
   "manifest": "https://github.com/sethcnelson/Bifrost/releases/latest/download/module.json",
   "download": "https://github.com/sethcnelson/Bifrost/releases/latest/download/bifrost-foundry-conduit.zip",
-  "license": "LICENSE",
-  "readme": "README.md",
-  "media": [
-    {
-      "type": "icon",
-      "url": "artwork/icon.png"
-    }
-  ]
+  "license": "",
+  "readme": "README.md"
 }

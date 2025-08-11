@@ -5,13 +5,13 @@
 export class Utils {
     /**
      * Logs a message to the console with a specific level.
-     * @param {Object} orig - The originator of the log message, typically the class instance.
+     * @param {string} orig - The originator of the log message, typically the class instance.
      * @param {string} message - The message to log.
      * @param {string} [level='info'] - The log level ('debug', 'info', 'warn', 'error').
      */
     static log(orig, message, level = 'info') 
     {
-        const prefix = 'Bifrost: ' + (orig?.constructor?.name || 'Unknown');
+        const prefix = 'Bifrost.' + (orig || 'Unknown') + ' ';
         const debugMode = game.settings.get('bifrost', 'debugMode');
 
         if (level === 'debug' && !debugMode) return;
@@ -31,6 +31,20 @@ export class Utils {
         }
     }
 
+    static addSceneControlButton(menuStructure, category, button) {
+        let menuCategory
+        if (game.release.generation <= 12) {
+            menuCategory = menuStructure.find(c => c.layer === category)
+            if (menuCategory) {
+                menuCategory.tools.push(button)
+            }
+        } else {
+            menuCategory = menuStructure[category]
+            if (menuCategory) {
+                menuCategory.tools[button.name] = button
+            }
+        }
+    }
 
     static async loadConfiguration() {
         let config = null;

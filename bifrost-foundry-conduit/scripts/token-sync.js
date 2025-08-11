@@ -3,6 +3,8 @@
  * Methods to query Foundry tokens and sync with Heimdall
  */
 
+import { Utils } from "./utils.js";
+
 export class BifrostTokenSync {
     constructor(webSocketHandler) {
         this.websocket = webSocketHandler;
@@ -26,7 +28,7 @@ export class BifrostTokenSync {
         } = options;
 
         if (!canvas.scene) {
-            console.warn('Bifrost: No active scene');
+            Utils.log('TokenSync','No active scene','warn');
             return [];
         }
 
@@ -193,7 +195,7 @@ export class BifrostTokenSync {
         if (!markerId) return false;
         
         // Check if token is in the known tokens map
-        return window.BifrostTokenManager?.knownTokens?.has(markerId) || false;
+        return game.bifrost.tokenManager?.knownTokens?.has(markerId) || false;
     }
 
     /**
@@ -251,11 +253,11 @@ export class BifrostTokenSync {
             const success = this.websocket.send(message);
             if (success) {
                 this.lastSyncTime = Date.now();
-                console.log(`Bifrost: Sent ${tokens.length} tokens to Heimdall`);
+                Utils.log('TokenSync',`Sent #${tokens.length} tokens to Heimdall`);
             }
             return success;
         } catch (error) {
-            console.error('Bifrost: Failed to send token list to Heimdall:', error);
+            Utils.log('TokenSync','Failed to send token list to Heimdall: ' + error,'error');
             return false;
         }
     }
@@ -363,7 +365,7 @@ export class BifrostTokenSync {
             }
         }, intervalMs);
         
-        console.log(`Bifrost: Started auto-sync every ${intervalMs}ms`);
+        Utils.log('TokenSync',`Started auto-sync every ${intervalMs}ms`);
     }
 
     /**
@@ -373,7 +375,7 @@ export class BifrostTokenSync {
         if (this.syncInterval) {
             clearInterval(this.syncInterval);
             this.syncInterval = null;
-            console.log('Bifrost: Stopped auto-sync');
+            Utils.log('TokenSync','Stopped auto-sync');
         }
     }
 
@@ -385,13 +387,13 @@ export class BifrostTokenSync {
     async syncSpecificToken(tokenId) {
         const tokenDoc = canvas.scene.tokens.get(tokenId);
         if (!tokenDoc) {
-            console.warn(`Bifrost: Token ${tokenId} not found`);
+            Utils.log('TokenSync',`Token ${tokenId} not found`,'warn');
             return false;
         }
 
         const tokenData = this.getCurrentSceneTokens().find(t => t.id === tokenId);
         if (!tokenData) {
-            console.warn(`Bifrost: Could not get data for token ${tokenId}`);
+            Utils.log('TokenSync', `Could not get data for token ${tokenId}`,'warn');
             return false;
         }
 

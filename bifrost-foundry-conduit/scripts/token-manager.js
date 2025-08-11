@@ -3,12 +3,18 @@
  * Handles token creation and updates from Heimdall ArUco marker tracking
  */
 
+import { Utils } from "./utils.js";
+
 export class BifrostTokenManager {
     constructor() {
         // Track known tokens by their ArUco marker ID
         this.knownTokens = new Map();
         // Cache of existing actors for quick lookup
         this.actorCache = new Map();
+        
+    }
+
+    initialize() {
         this.refreshActorCache();
     }
 
@@ -17,6 +23,8 @@ export class BifrostTokenManager {
      */
     refreshActorCache() {
         this.actorCache.clear();
+        if (!game?.actors) return;
+
         game.actors.forEach(actor => {
             this.actorCache.set(actor.name.toLowerCase(), actor);
         });
@@ -49,7 +57,7 @@ export class BifrostTokenManager {
             }
 
         } catch (error) {
-            console.error(`Bifrost: Error handling Heimdall message for marker ${markerId}:`, error);
+            Utils.log('TokenMgr',`Error handling Heimdall message for marker ${markerId}: ` + error,'error');
             return {
                 success: false,
                 markerId,
@@ -69,7 +77,7 @@ export class BifrostTokenManager {
      * @returns {Promise<Object>} Creation result
      */
     async createNewToken(markerId, tokenName, x, y, type, metadata) {
-        console.log(`Bifrost: Creating new ${type} token "${tokenName}" for marker ${markerId}`);
+        Utils.log('TokenMgr', `Creating new ${type} token "${tokenName}" for marker ${markerId}`);
 
         let result;
 
@@ -162,7 +170,7 @@ export class BifrostTokenManager {
             parent: canvas.scene
         });
 
-        console.log(`Bifrost: Created linked player token for "${playerName}"`);
+        Utils.log('TokenMgr', `Created linked player token for "${playerName}"`);
 
         return {
             success: true,
@@ -224,7 +232,7 @@ export class BifrostTokenManager {
             parent: canvas.scene
         });
 
-        console.log(`Bifrost: Created standalone ${type} token "${tokenName}"`);
+        Utils.log('TokenMgr', `Created standalone ${type} token "${tokenName}"`);
 
         return {
             success: true,
@@ -377,11 +385,15 @@ export class BifrostTokenManager {
         return status;
     }
 
+    getTrackedTokenCount() {
+        return this.knownTokens.size;
+    }
+
     /**
      * Clear all tracking data (useful for scene changes)
      */
     clearTracking() {
         this.knownTokens.clear();
-        console.log("Bifrost: Cleared all token tracking data");
+        Utils.log('TokenMgr', "Cleared all token tracking data");
     }
 }
