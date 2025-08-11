@@ -22,143 +22,154 @@ Hooks.on("controlToken", (token, controlled) => {
 });
 }); */
 
-import { BifrostTokenManager } from "./token-manager.js";
 import { BifrostWebSocketHandler } from "./websocket.js";
+import { Utils } from "./utils.js";
 
 class BifrostModule {
     constructor() {
-        this.websocket = null;
-        this.isConnected = false;
-        this.lastConnectionAttempt = null;
-        this.config = {
-            websocketPort: 30001,
-            reconnectInterval: 5000,
-            updateThrottle: 100
-        };
-        this.lastUpdate = {};
-        this.tokenCache = new Map();
-        this.markerSchema = {
-            corner: [0, 1, 2, 3],
-            player: [10, 25],    // 16 players (IDs 10-25)
-            item: [30, 61],      // 32 standard items (IDs 30-61)
-            custom: [62, 999]    // Custom markers (IDs 62+)
-        };
+        this.moduleId = 'bifrost';
+        this.initialized = false;
+        this.ready = false;
+        
         
         // Settings variables
-        this.heimdallHost = null;
-        this.websocketPort = null;
-        this.autoCreateTokens = null;
-        this.tokenImagePath = null;
-        this.playerTokenImage = null;
-        this.itemTokenImage = null;
+        this.settings = {};
 
-        
+        // Sub-system references
+        this.webSocketHandler = null;
     }
 
     async initialize() {
+        if (this.initialized) {
+            console.warn('Bifrost | Module already initialized');
+            return;
+        }
         console.log("Bifrost | Initializing module");
         
-        this.webSocketHandler = new BifrostWebSocketHandler();
-        this.bifrostTokenManager = this.webSocketHandler.bifrostTokenManager;
-        this.bifrostTokenSync = this.webSocketHandler.bifrostTokenSync;
-
-        this.isConnected = this.webSocketHandler.isConnected;
-
-        // Load configuration and populate settings
-        const config = await BifrostModule.loadConfiguration();
-        this.populateSettingsFromConfig(config);
-        
-        // Add module settings
-        //this.registerGameSettings(config);
-        
-        // Set up WebSocket connection
-        //this.connectWebSocket();
-        
-        // Add UI controls
-        this.addControls();
-    }
-
-    populateSettingsFromConfig(config) {
-        this.heimdallHost = config.userSettings?.heimdallHost || config.gameSettings.heimdallHost?.default;
-        this.websocketPort = config.userSettings?.websocketPort || config.gameSettings.websocketPort?.default;
-        this.autoCreateTokens = config.userSettings?.autoCreateTokens !== undefined ? config.userSettings?.autoCreateTokens : config.gameSettings.autoCreateTokens?.default;
-        this.tokenImagePath = config.userSettings?.tokenImagePath || config.gameSettings.tokenImagePath?.default;
-        this.playerTokenImage = config.userSettings?.playerTokenImage || config.gameSettings.playerTokenImage?.default;
-        this.itemTokenImage = config.userSettings?.itemTokenImage || config.gameSettings.itemTokenImage?.default;
-        
-        console.log("Bifrost | Settings populated from settings.json file.");
-    }
-
-    static async loadConfiguration() {
-        let config = null;
-
         try {
-            // Load default configuration
-            const configFile = await window.fs.readFile(
-                "modules/bifrost-foundry-conduit/config/settings.json",
-                { encoding: 'utf8' }
-            );
-            config = JSON.parse(configFile);
-            console.log("Bifrost | Settings file loaded.");
+            // Load configuration and populate settings
+            const config = await Utils.loadConfiguration();
+            this.settings = config;
+
+            // Register module settings
+            //this.registerSettings();
+
+            
+            // Initialize core systems (but don't start them yet)
+            this.webSocketHandler = new BifrostWebSocketHandler(config);
+            this.tokenManager = this.webSocketHandler.bifrostTokenManager;
+            this.tokenSync = this.webSocketHandler.bifrostTokenSync;
+
+            // Register API endpoints
+            //this.registerAPI();
+
+            // Set up hooks for later lifecycle events
+            this.registerHooks();
+            
+            // Add UI controls
+            this.addControls();
+
+            this.initialized = true;
+            console.log('Bifrost | Module initialized successfully');
 
         } catch (error) {
-            console.error("Bifrost | Failed to load configuration files: ", error);
-            config = BifrostModule.getFallbackConfig();
+            console.error('Bifrost | Initialization failed:', error);
+            throw error;
         }
-
-        return config;
+        
+        
     }
 
-    static getFallbackConfig() {
-        return {
-            userSettings: {
-                heimdallHost: "localhost",
-                websocketPort: 30001,
-                autoCreateTokens: true,
-                tokenImagePath: "icons/svg/mystery-man.svg",
-                playerTokenImage: "icons/svg/mystery-man.svg",
-                itemTokenImage: "icons/svg/item-bag.svg"
+    /**
+     * Start the module (called during 'ready' hook)
+     * Begin actual functionality
+     */
+    async start() {
+        if (!this.initialized) {
+            console.error('Bifrost | Cannot start - module not initialized');
+            return;
+        }
+
+        if (this.ready) {
+            console.warn('Bifrost | Module already started');
+            return;
+        }
+
+        console.log('Bifrost | Starting module...');
+
+        try {
+            
+            // Start WebSocket connection if auto-connect enabled
+            if (this.autoConnect) {
+                setTimeout(() => {
+                    this.webSocketHandler.connect();
+                }, 2000); // Delay to ensure everything is loaded
             }
-        };
-    }
 
-    getMarkerType(arucoId) {
-        if (this.markerSchema.corner.includes(arucoId)) {
-            return 'corner';
-        } else if (arucoId >= this.markerSchema.player[0] && arucoId <= this.markerSchema.player[1]) {
-            return 'player';
-        } else if (arucoId >= this.markerSchema.item[0] && arucoId <= this.markerSchema.item[1]) {
-            return 'item';
-        } else if (arucoId >= this.markerSchema.custom[0] && arucoId <= this.markerSchema.custom[1]) {
-            return 'custom';
+            this.ready = true;
+            console.log('Bifrost | Module started successfully');
+
+        } catch (error) {
+            console.error('Bifrost | Startup failed:', error);
         }
-        return 'unknown';
     }
 
-    getItemName(arucoId) {
-        const itemNames = {
-            30: "Goblin", 31: "Orc", 32: "Skeleton", 33: "Dragon", 34: "Troll", 35: "Wizard_Enemy", 36: "Beast", 37: "Demon",
-            40: "Treasure_Chest", 41: "Magic_Item", 42: "Gold_Pile", 43: "Potion", 44: "Weapon", 45: "Armor", 46: "Scroll", 47: "Key",
-            50: "NPC_Merchant", 51: "NPC_Guard", 52: "NPC_Noble", 53: "NPC_Innkeeper", 54: "NPC_Priest",
-            55: "Door", 56: "Trap", 57: "Fire_Hazard", 58: "Altar", 59: "Portal", 60: "Vehicle", 61: "Objective"
-        };
-        return itemNames[arucoId] || `Item_${arucoId}`;
-    }
+    /**
+     * Register hooks for lifecycle events
+     */
+    registerHooks() {
+        // Scene change handling
+        Hooks.on('canvasReady', () => {
+            if (this.ready && this.webSocketHandler.isConnected) {
+                // Notify Heimdall of scene change
+                this.webSocketHandler.send({
+                    type: 'scene_changed',
+                    scene_id: canvas.scene?.id,
+                    scene_name: canvas.scene?.name
+                });
 
-    generateTokenName(arucoId, markerType) {
-        switch (markerType) {
-            case 'player':
-                const playerNum = arucoId - 10 + 1;
-                return `Player_${playerNum.toString().padStart(2, '0')}`;
-            case 'item':
-                return this.getItemName(arucoId);
-            case 'custom':
-                return `Custom_${arucoId}`;
-            case 'corner':
-                return `Corner_${arucoId}`;
-            default:
-                return `ArUco_${arucoId}`;
-        }
+                // Send updated token list
+                setTimeout(() => {
+                    this.tokenSync.sendTokenListToHeimdall();
+                }, 1000);
+            }
+        });
+
+        // Token change handling
+        Hooks.on('createToken', async (tokenDoc) => {
+            if (this.ready && this.webSocketHandler.isConnected) {
+                await this.tokenSync.syncSpecificToken(tokenDoc.id);
+            }
+        });
+
+        Hooks.on('updateToken', async (tokenDoc, changes) => {
+            if (this.ready && this.webSocketHandler.isConnected) {
+                // Only sync important changes
+                if (changes.x !== undefined || changes.y !== undefined ||
+                    changes.hidden !== undefined || changes.name !== undefined) {
+                    await this.tokenSync.syncSpecificToken(tokenDoc.id);
+                }
+            }
+        });
+
+        Hooks.on('deleteToken', async (tokenDoc) => {
+            if (this.ready && this.webSocketHandler.isConnected) {
+                this.webSocketHandler.send({
+                    type: 'token_deleted',
+                    tokenId: tokenDoc.id,
+                    timestamp: Date.now()
+                });
+            }
+        });
+
+
+        // Hook to refresh actor cache when actors change
+        Hooks.on("createActor", () => this.tokenManager.refreshActorCache());
+        Hooks.on("deleteActor", () => this.tokenManager.refreshActorCache());
+        Hooks.on("updateActor", () => this.tokenManager.refreshActorCache());
+        
+
+        console.log('Bifrost | Hooks registered');
     }
 
 
@@ -182,7 +193,7 @@ class BifrostModule {
     showStatusDialog() {
         const heimdallHost = this.heimdallHost;
         const port = this.websocketPort;
-        this.tokenCache = this.bifrostTokenManager.knownTokens; // Get current token cache
+        this.tokenCache = this.tokenManager.knownTokens; // Get current token cache
         this.isConnected = this.webSocketHandler.isConnected;
         
         const content = `
@@ -255,109 +266,100 @@ class BifrostModule {
     }
 
 
-
-    cleanup() {
-        console.log("Bifrost | Cleaning up resources");
-
-
-        //Cleanup token manager
-        this.bifrostTokenManager.clearTracking();
-
-        //Cleanup websocket handler
-        this.bifrostWebSocket.disconnect();
-
-        this.isConnected = false;
+    /**
+     * Get overall module status
+     */
+    getModuleStatus() {
+        return {
+            initialized: this.initialized,
+            ready: this.ready,
+            websocket: this.webSocketHandler?.getStatus(),
+            tokenManager: {
+                trackedTokens: this.tokenManager?.getTrackedTokensStatus()?.length || 0
+            },
+            config: this.config
+        };
     }
+
+    /**
+     * Shutdown the module cleanly
+     */
+    shutdown() {
+        console.log('Bifrost | Shutting down module...');
+
+        try {
+            // Stop background tasks
+            this.tokenSync?.stopAutoSync();
+
+            // Disconnect WebSocket
+            this.webSocketHandler?.disconnect();
+            this.isConnected = false;
+
+            // Clear tracking data
+            this.tokenManager?.clearTracking();
+
+            this.ready = false;
+            console.log('Bifrost | Module shutdown complete');
+
+        } catch (error) {
+            console.error('Bifrost | Shutdown error:', error);
+        }
+    }
+
 }
 
-// Initialize the module
-let bifrost = null;
 
-Hooks.once('init', () => {
-    console.log("Bifrost | Module initializing");
-    bifrost = new BifrostModule();
+/**
+ * MODULE INITIALIZATION
+ * This is where the magic happens
+ */
 
-    // Set up cleanup when page/game is closed
-    window.addEventListener("beforeunload", () => {
-        // Clean up websockets and other resources
-        if (bifrost) {
-            bifrost.cleanup();
-        }
-    });
-});
+// Create the module instance
+let bifrostModule;
 
-Hooks.once('ready', () => {
-    bifrost.initialize();
-    
-    // Expose API for console access
-    game.modules.get('bifrost').api = {
-        getStatus: () => ({
-            connected: bifrost.isConnected,
-            trackedTokens: bifrost.tokenCache.size,
-            heimdallHost: this.heimdallHost,
-            websocketPort: this.websocketPort
-        }),
-        getTrackedTokens: () => Array.from(bifrost.tokenCache.entries()),
-        getMarkerSchema: () => bifrost.markerSchema
-    };
+// Initialize during 'init' hook (early lifecycle)
+Hooks.once('init', async () => {
+    console.log('Bifrost | Init hook fired');
 
-    // Store internal reference
-    game.modules.get('bifrost').instance = bifrost;
-});
+    try {
+        bifrostModule = new BifrostModule();
+        await bifrostModule.initialize();
 
-// Clean up on module disable
-Hooks.on('bifrostDisabled', () => {
-    bifrost.cleanup();
-});
-
-// Auto-sync when tokens are created, updated, or deleted
-Hooks.on('createToken', async (tokenDoc) => {
-    if (window.BifrostWebSocket?.isConnected) {
-        await BifrostTokenSync.syncSpecificToken(tokenDoc.id);
-    }
-});
-
-Hooks.on('updateToken', async (tokenDoc, changes) => {
-    // Only sync if position or other important properties changed
-    if (changes.x !== undefined || changes.y !== undefined ||
-        changes.hidden !== undefined || changes.name !== undefined) {
-        if (window.BifrostWebSocket?.isConnected) {
-            await BifrostTokenSync.syncSpecificToken(tokenDoc.id);
-        }
-    }
-});
-
-Hooks.on('deleteToken', async (tokenDoc) => {
-    if (window.BifrostWebSocket?.isConnected) {
-        window.BifrostWebSocket.send({
-            type: 'token_deleted',
-            tokenId: tokenDoc.id,
-            timestamp: Date.now()
+        // Set up cleanup when page/game is closed
+        window.addEventListener("beforeunload", () => {
+            // Clean up websockets and other resources
+            if (bifrostModule) {
+                bifrostModule.shutdown();
+            }
         });
+    } catch (error) {
+        console.error('Bifrost | Failed to initialize:', error);
+        ui.notifications.error('Bifrost module failed to initialize. Check console for details.');
     }
 });
 
-// Hook to refresh actor cache when actors change
-Hooks.on("createActor", () => BifrostTokenManager.refreshActorCache());
-Hooks.on("deleteActor", () => BifrostTokenManager.refreshActorCache());
-Hooks.on("updateActor", () => BifrostTokenManager.refreshActorCache());
+// Start during 'ready' hook (late lifecycle, everything loaded)
+Hooks.once('ready', async () => {
+    console.log('Bifrost | Ready hook fired');
 
-// Hook to clear tracking when scene changes
-Hooks.on("canvasReady", () => {
-    console.log("Bifrost | Scene changed, clearing token tracking. Will await new tracking update.");
-    BifrostTokenManager.clearTracking();
+    if (bifrostModule) {
+        await bifrostModule.start();
+        ui.notifications.info('Bifrost module loaded successfully');
+    } else {
+        console.error('Bifrost | Module instance not found');
+        ui.notifications.error('Bifrost module failed to start');
+    }
+});
 
-    setTimeout(async () => {
-        if (window.BifrostWebSocket?.isConnected) {
-            await BifrostTokenSync.sendTokenListToHeimdall();
-        }
-    }, 1000);
+// Optional: Handle module disable
+Hooks.on('bifrostDisabled', () => {
+    if (bifrostModule) {
+        bifrostModule.shutdown();
+    }
 });
 
 
 
-window.BifrostTokenManager = new BifrostTokenManager();
-window.BifrostWebSocket = new BifrostWebSocketHandler();
 
-//const bifrostModule = new BifrostModule()
-window.BifrostModule = new BifrostModule();
+console.log('Bifrost | Module initialization script loaded');
+

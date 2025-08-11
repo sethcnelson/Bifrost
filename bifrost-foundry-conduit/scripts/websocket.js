@@ -7,22 +7,22 @@ import { BifrostTokenSync } from "./token-sync.js";
 import { Utils } from "./utils.js";
 
 export class BifrostWebSocketHandler {
-    constructor(host, port) {
+    constructor(config) {
         this.socket = null;
         this.isConnected = false;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
         this.reconnectDelay = 5000; // 5 seconds
         this.heartbeatInterval = null;
+        this.moduleConfig = config;
         this.connectionConfig = {
-            url: `${this.connectionConfig.protocol}://${this.connectionConfig.host}:${this.connectionConfig.port}`,
-            port: this.port,
-            host: this.host,
-            protocol: 'ws'
+            url: `ws://${this.moduleConfig.host}:${this.moduleConfig.port}`,
+            port: this.moduleConfig.port,
+            host: this.moduleConfig.host
         };
 
         this.bifrostTokenManager = new BifrostTokenManager(); // Token manager instance
-        this.bifrostTokenSync = new BifrostTokenSync(); // Token sync instance
+        this.bifrostTokenSync = new BifrostTokenSync(this); // Token sync instance
     }
 
 
