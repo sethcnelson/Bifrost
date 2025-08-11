@@ -168,7 +168,7 @@ class BifrostModule {
      */
     registerAPI() {
         // Method 1: Add to game.modules (Recommended for Foundry)
-        const moduleData = game.modules.get(this.moduleId);
+        /*const moduleData = game.modules.get(this.moduleId);
         if (moduleData) {
             moduleData.api = {
                 // Core module access
@@ -199,6 +199,36 @@ class BifrostModule {
                 getVersion: () => moduleData.version || '1.0.0'
             };
         }
+        */
+        
+        // Method 2: Add to game object (Alternative approach)
+        game.bifrost = {
+            module: this,
+
+            connect: () => this.webSocketHandler.connect(),
+            disconnect: () => this.webSocketHandler.disconnect(),
+            getConnectionStatus: () => this.webSocketHandler.getStatus(),
+            isConnected: this.webSocketHandler.isConnected,
+            send: (message) => this.webSocketHandler.send(message),
+            getTrackedTokenCount: this.webSocketHandler.getTrackedTokenCount,
+
+            // Token management
+            tokenManager: this.tokenManager,
+            syncTokens: () => this.tokenSync.sendTokenListToHeimdall(),
+            syncPlayers: () => this.tokenSync.sendPlayerTokensToHeimdall(),
+            getTokens: (options) => this.tokenSync.getCurrentSceneTokens(options),
+
+            // Convenience methods
+            startAutoSync: (interval) => this.tokenSync.startAutoSync(interval),
+            stopAutoSync: () => this.tokenSync.stopAutoSync(),
+            clearTracking: () => this.tokenManager.clearTracking(),
+
+            // Status and debugging
+            getStatus: () => this.getModuleStatus(),
+            isReady: () => this.ready,
+            getVersion: () => moduleData.version || '1.0.0'
+        };
+        
 
         Utils.log('Main', 'API registered successfully');
     }

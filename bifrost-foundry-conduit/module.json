@@ -2,7 +2,7 @@
   "id": "bifrost-foundry-conduit",
   "title": "Bifrost",
   "description": "Integrates Heimdall computer vision command and control system for hybrid tabletop gaming. The great rainbow bridge between worlds, connecting a physical game table to the virtual game in Foundry. Allows game tokens to be controlled by physical tokens and players/DM can use hand gestures to control game.",
-  "version": "0.1.0.18",
+  "version": "0.1.0.21",
   "compatibility": {
     "minimum": "11",
     "verified": "12",

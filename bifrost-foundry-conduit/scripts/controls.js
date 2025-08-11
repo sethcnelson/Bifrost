@@ -21,10 +21,10 @@ export class BifrostControlButtons {
         this.addSceneControls();
         
         // Add token controls (when tokens are selected)
-        this.addTokenControls();
+        //this.addTokenControls();
         
         // Add settings button (gear menu)
-        this.addSettingsButton();
+        //this.addSettingsButton();
         
         // Add floating control panel (optional)
         //this.addFloatingControls();
@@ -87,7 +87,9 @@ export class BifrostControlButtons {
                 ]
             };
 
-            controls.push(bifrostControls);
+            //v12 and below used this method?
+            //controls.push(bifrostControls);
+            controls["bifrost"] = bifrostControls;
             Utils.log('Controls', 'Scene controls added');
         });
     }
@@ -234,18 +236,21 @@ export class BifrostControlButtons {
         // Create performance stats panel
         //div.class= good|fair|poor
         // span.class = "average"
-        const statsPanel = $(`
+        const statsPanel1 = $(`
             <div id="bifrost-perf" class="">
                 <label>Bifrost</label>
-                <span class="average" id="bifrost-status></span>
+                <span class="average" id="bifrost-status"></span>
             </div>
+            `);
+        const statsPanel2 = $(`
             <div id="bifrost-tokens" class="">
                 <label>Tokens</label>
-                <span class="average" id="bifrost-token-status></span>
+                <span class="average" id="bifrost-token-status"></span>
             </div>
         `);
         
-        $('#performance-stats').append(statsPanel);
+        $('#performance-stats').append(statsPanel1);
+        $('#performance-stats').append(statsPanel2);
 
         $('#bifrost-perf').className = (game.bifrost.isConnected ? 'good' : 'poor');
         $('#bifrost-status').textContent = (game.bifrost.isConnected ? 'OK' : 'X');
